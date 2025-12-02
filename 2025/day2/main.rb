@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
-def invalid_id?(array_1, array_2)
-    return false if array_1[0].to_s == '0'
+def invalid_id?(array)
+    return false if array.first[0].to_s == '0'
 
-    array_1 == array_2
+    array.uniq.size == 1
 end
 
 input = []
@@ -20,15 +20,19 @@ ranges.each do |range|
     (range[0]..range[1]).each do |id|
         id_array = id.to_s.chars
         length = id_array.size
-        next unless length % 2 == 0
-
+        # next unless length % 2 == 0
         halfway_index = (length / 2)
 
-        id1_array = id_array[0..(halfway_index - 1)]
-        id2_array = id_array[halfway_index..-1]
-        # puts "#{id} -> #{id1_array} : #{id2_array}"
-        
-        invalid_ids_array << id if invalid_id?(id1_array, id2_array)
+        number_of_sets = (length - 1).downto(1).filter{|f| length % f == 0}
+        found = false
+        number_of_sets.each do |set|
+            next if found
+            id_arrays = id_array.each_slice(set).to_a
+            if invalid_id?(id_arrays)
+                invalid_ids_array << id
+                found = true
+            end
+        end
     end
 end
 
